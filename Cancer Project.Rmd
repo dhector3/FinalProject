@@ -5,6 +5,8 @@ date: "3/25/2020"
 output: html_notebook
 ---
 
+Does cancer and death rate due to cancer change between US States. I am going to research this simple question to learn if there is a difference and if so, does population account for the change? This topic is important personally because many of my family memebers have died due to cancer and I am interested in learning more about the topic.
+
 ```{r}
 #Adding the needed packages
 
@@ -90,4 +92,120 @@ CancerDeaths2 <-
 CancerDeaths2
 
 ```
+```{r}
+#I am now going to join the CancerIncidents2 and CancerDeaths2 dataset together
 
+CancerData <-
+  CancerIncedents2 %>%
+  left_join(CancerDeaths2, by = "state")
+
+CancerData
+
+```
+```{r}
+#Finally we will join the CancerData with the FinalStatePop Data
+
+Cancer <-
+  FinalStatepop %>%
+  select(State, StatePop, Code) %>%
+  left_join(CancerData, by = c("Code" = "state"))
+
+Cancer
+
+```
+
+```{r}
+#I am now going to create a new variable that gives the percentage of deathrate
+
+Cancer <-
+Cancer %>%
+  mutate(deathpercent = deathrate/cancerrate) %>%
+  arrange(desc(deathpercent))
+Cancer
+
+```
+
+```{r}
+Cancer %>%
+  summarise(MeanCancer = mean(cancerrate), MeanDeaths = mean(deathrate)) %>%
+  mutate(meandeathrate = MeanDeaths/MeanCancer)
+
+```
+
+We can see above that Nevada has the highest deaths per cancer patient. This is odd seeing how the population is not the largest by far and the cancer rate is below the mean cancer rate across all states which is shown above. The death rate is about average though which is probably why the percentage is so high.  
+
+```{r}
+#I am going to round the numbers in death percent 
+
+Cancer <-
+  Cancer %>%
+  mutate(deathpercent = round(deathpercent, digits = 2))
+  
+Cancer
+
+```
+
+```{r}
+#I am now going to create a dataframe that will let me make me see the states with each death percent
+
+Cancer2 <-
+  Cancer %>%
+  select(State, deathpercent) %>%
+  arrange(desc(deathpercent))
+
+Cancer2
+
+
+```
+
+```{r}
+#Now that we have the new data table I am going to spread the table with State
+
+Cancer2 <- 
+  Cancer2 %>%
+  spread(key = State, value = deathpercent) 
+Cancer2
+```
+
+Looking above we can easily see the death percents for each state. The table has been layed out so you can see the information very easily for your chosen state. The states are also in alphabetical order now so it is also easier to find your state.
+
+
+```{r}
+#Now we will look at some plots to see if we can see a relationship between the variables
+#First we will look at State vs Cancer rate plot
+
+Cancer %>%
+  ggplot(aes(x = cancerrate, y = deathrate)) + 
+  geom_point()
+  
+
+  
+
+```
+
+We can see above that as the cancer rate increases so does the death rate. There is a noticeable linear relationship between the two.
+
+```{r}
+#Now I am going to add population into the graph to see if population effects the cancer and/or death rate.
+
+Cancer %>%
+  ggplot(aes(x = cancerrate, y = deathrate)) + 
+  geom_point(aes(size = StatePop))
+
+```
+
+Although there are a few outliers we can see that most states fall into the middle range of population and that most of the larger populated states fall into the lower end of cancer and death rate.
+
+```{r}
+#Now I am going to add State into the graph to specify which states are the outliers
+
+Cancer %>%
+  ggplot(aes(x = cancerrate, y = deathrate)) + 
+  geom_point(aes(size = StatePop, alpha = .2)) +
+  geom_text(aes(label = Code)) +
+  xlab("Cancer Rate per 100,000 people") +
+  ylab("Death rates from Cancer")
+
+```
+
+We can see on the graph above that the outlier that was talked about in the previous segment is in fact Kentucky which has a small population but a high cancer rate and death rate. We can see that most of the states fall between the 440-480 Cancer rate range and that most states also fall between 150-180 cancer related deaths. There are some outliers but I don't really think there is enough evidence to assume that different states have a dramtically different cancer rate and the population count also doesn't seem to effect the rate either.
