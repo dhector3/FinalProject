@@ -1,0 +1,93 @@
+---
+title: "Cancer Study"
+author: "Dillon Hector"
+date: "3/25/2020"
+output: html_notebook
+---
+
+```{r}
+#Adding the needed packages
+
+library(DataComputing)
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+
+```
+
+```{r}
+#Importing the needed datasets
+
+cancerincedents <- read.csv(file.choose(), header = T)
+cancerdeaths <- read.csv(file.choose(), header = T)
+statepop <- read.csv(file.choose(), header = T)
+stateabbrev <- read.csv(file.choose(), header = T)
+
+```
+```{r}
+#Inspecting the data that was imported
+
+glimpse(cancerincedents)
+glimpse(cancerdeaths)
+glimpse(statepop)
+glimpse(stateabbrev)
+
+head(cancerincedents)
+head(cancerdeaths)
+head(statepop)
+head(stateabbrev)
+```
+
+```{r}
+#The first task that needs to be done is to wranglet the datasets togetheer into one dataset
+
+#The first wrangle will be to join stateabbrev with statepop
+
+statepopcorrected <-
+  statepop %>%
+  left_join(stateabbrev, by = "State") 
+
+#Now I will delete the variable "Abbrev" 
+
+statepopcorrected2 <- statepopcorrected[,-3]
+
+#Here is the resulting table
+
+statepopcorrected2
+```
+
+
+```{r}
+#I am not fond with the variable name "X2018.Population" so I will change that now
+
+FinalStatepop <-
+       statepopcorrected2 %>%
+       rename(StatePop = X2018.Population)
+
+FinalStatepop
+  
+```
+
+```{r}
+#Now I am going to rename the variables in cancer incidents and deaths to be more informative
+
+CancerIncedents2 <-
+  cancerincedents %>%
+  rename(cancerrate = rate) %>%
+  select(state, cancerrate)
+
+CancerIncedents2
+
+```
+```{r}
+#I am now going to do the same task I did above but with cancerdeaths dataset
+
+CancerDeaths2 <-
+  cancerdeaths %>%
+  rename(deathrate = rate) %>%
+  select(state, deathrate)
+
+CancerDeaths2
+
+```
+
