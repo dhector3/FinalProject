@@ -1,0 +1,71 @@
+---
+authors: "Dillon Hector, "
+title: "Final Project Preliminary EDA"
+output: html_notebook
+---
+
+Final Project Preliminary EDA
+
+```{r}
+library(ggplot2)
+library(DataComputing)
+```
+
+
+- Guiding Question
+
+Does the cancer rate and death rate due to cancer change between different states in the US? If so, does the population of the state have any effect?
+
+- Data Sources
+
+The three data sources that are used are both outside of R. One of them is from data world, (https://data.world/adamhelsinger/cancer-rates-by-u-s-state/workspace/project-summary?agentid=adamhelsinger&datasetid=cancer-rates-by-u-s-state)
+And the other is from Kaggle (https://www.kaggle.com/lucasvictor/us-state-populations-2018).
+
+The first data set is made by Adam Heelsinger who posted this dataset on Kaggle. The data is divided into two tables. One of them has the cancer rates by state and the other has the death rates due to cancer by state. Each case represents the state and the number of incidents being cancer tests or deaths.
+
+The second is a dataset made from a user called Vikas which contains the populations of each state. The user used this data set while studying about gun violence by state. Each case represents a state and its population.
+
+The third data set is simply an abbreviation data table that has the full state names with their shorteened version which is needed due tot he states being abbreviated in the cancer data and not abbreviated in the population data.
+This dataset is brought in from a site called World Population Review. (https://worldpopulationreview.com/states/state-abbreviations/)
+
+```{r}
+#Reading the data into r
+
+cancerincedents <- read.csv(file.choose(), header = T)
+cancerdeaths <- read.csv(file.choose(), header = T)
+```
+```{r}
+summary(cancerincedents)
+```
+
+```{r}
+summary(cancerdeaths)
+```
+
+Looking at the two data tables we can see a state, range, rate. I am likely going to exclude the range variable as it doesn't need to be used for this project. I also may want to change the variable names of rate in each dataset to be more descriptive. 
+
+```{r}
+statepop <- read.csv(file.choose(), header = T)
+```
+```{r}
+summary(statepop)
+```
+
+
+Looking at the above data we can see thee dataset contains two variables being State and X2018.Population. I may want to change the  name of the population variable to simply population. 
+
+```{r}
+stateabbrev <- read.csv(file.choose(), header = T)
+summary(stateabbrev)
+```
+
+I am going to make a plot of Cancer Incidents by each state
+
+```{r}
+cancerincedents %>%
+  ggplot(aes(x = state, y = rate)) + 
+  geom_point()
+```
+
+There seems to be some outliers in the data that would need to be investigated further with some more variables including population and deathrate.
+
