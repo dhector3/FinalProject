@@ -14,6 +14,7 @@ library(DataComputing)
 library(ggplot2)
 library(tidyverse)
 library(dplyr)
+library(party)
 
 ```
 
@@ -209,3 +210,16 @@ Cancer %>%
 ```
 
 We can see on the graph above that the outlier that was talked about in the previous segment is in fact Kentucky which has a small population but a high cancer rate and death rate. We can see that most of the states fall between the 440-480 Cancer rate range and that most states also fall between 150-180 cancer related deaths. There are some outliers but I don't really think there is enough evidence to assume that different states have a dramtically different cancer rate and the population count also doesn't seem to effect the rate either.
+
+
+To understand the relationship better we will make a ctree with death rate as the ending variable.
+
+
+```{r}
+ctreefunc <- party::ctree(deathrate ~ cancerrate + StatePop, data = Cancer)
+
+plot(ctreefunc, type = "simple")
+```
+
+We can clearly see above that as the cancer rate raises the deathrate due to cancer is greater, which is understandable. Although looking above to the Death Rates from cancer and cancer rate table we can see there are some outliers such as conneticut which has a cancer rate above 450 but has a low death rate compared to pther states in that cancer rate area with only about 140 deaths.
+
