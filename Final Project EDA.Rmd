@@ -1,5 +1,5 @@
 ---
-authors: "Dillon Hector, "
+authors: "Dillon Hector, Chenxi Su, Penghao Zeng"
 title: "Final Project Preliminary EDA"
 output: html_notebook
 ---
@@ -14,19 +14,29 @@ library(DataComputing)
 
 - Guiding Question
 
-Does the cancer rate and death rate due to cancer change between different states in the US? If so, does the population of the state have any effect?
+Do the cancer rate and death rate due to cancer change between different states in the US? If so, does the population of the state have any effect?
 
 - Data Sources
 
-The three data sources that are used are both outside of R. One of them is from data world, (https://data.world/adamhelsinger/cancer-rates-by-u-s-state/workspace/project-summary?agentid=adamhelsinger&datasetid=cancer-rates-by-u-s-state)
+The three data sources that are used are both outsides of R. One of them is from the data world, (https://data.world/adamhelsinger/cancer-rates-by-u-s-state/workspace/project-summary?agentid=adamhelsinger&datasetid=cancer-rates-by-u-s-state)
 And the other is from Kaggle (https://www.kaggle.com/lucasvictor/us-state-populations-2018).
 
-The first data set is made by Adam Heelsinger who posted this dataset on Kaggle. The data is divided into two tables. One of them has the cancer rates by state and the other has the death rates due to cancer by state. Each case represents the state and the number of incidents being cancer tests or deaths.
+The first data set is made by Adam Heelsinger who posted this dataset on Kaggle. The data is divided into two tables. One of them has cancer rates by state and the other has the death rates due to cancer by state. Each case represents the state and the number of incidents being cancer tests or deaths. There are 51 cases in total of states & population. 
 
-The second is a dataset made from a user called Vikas which contains the populations of each state. The user used this data set while studying about gun violence by state. Each case represents a state and its population.
+The second is a dataset made from a user called Vikas which contains the populations of each state. The user used this data set while studying gun violence by the state. Each case represents a state and its population.
 
-The third data set is simply an abbreviation data table that has the full state names with their shorteened version which is needed due tot he states being abbreviated in the cancer data and not abbreviated in the population data.
-This dataset is brought in from a site called World Population Review. (https://worldpopulationreview.com/states/state-abbreviations/)
+The third data set is simply an abbreviation data table that has the full state names with their shortened version which is needed due to the states being abbreviated in the cancer data and not abbreviated in the population data. This dataset is brought in from a site called World Population Review. (https://worldpopulationreview.com/states/state-abbreviations/). There are 51 total cases with each case of each state’s name, abbrev and code. 
+
+
+ 
+When & Why were they originally collected?
+ 
+The first data was collected in 2018. From the introduction of the dataset content: “While working on the gun violence data set, we wanted to normalize the number of incidents because some states are more populous than others so normalizing the gun incidents per million people gave me a different outlook towards the data.” 
+ 
+The third dataset collected continues since the 1800s. The US Postal Service came up with a system known as Zoning Improvement Plan codes, or ZIP codes. The system consisted of numbers for zones in each major city so that the mail could be more quickly sorted by people who did not have extensive knowledge of the postal service.  
+
+ 
+
 
 ```{r}
 #Reading the data into r
@@ -42,7 +52,7 @@ summary(cancerincedents)
 summary(cancerdeaths)
 ```
 
-Looking at the two data tables we can see a state, range, rate. I am likely going to exclude the range variable as it doesn't need to be used for this project. I also may want to change the variable names of rate in each dataset to be more descriptive. 
+Looking at the two data tables we can see a state, range, rate. We are likely going to exclude the range variable as it doesn't need to be used for this project. We also may want to change the variable names of the rate in each dataset to be more descriptive. 
 
 ```{r}
 statepop <- read.csv(file.choose(), header = T)
@@ -52,14 +62,14 @@ summary(statepop)
 ```
 
 
-Looking at the above data we can see thee dataset contains two variables being State and X2018.Population. I may want to change the  name of the population variable to simply population. 
+Looking at the above data we can see the dataset contains two variables being State and X2018.Population. We may want to change the name of the population variable to simply population. 
 
 ```{r}
 stateabbrev <- read.csv(file.choose(), header = T)
 summary(stateabbrev)
 ```
 
-I am going to make a plot of Cancer Incidents by each state
+We are going to make a plot of Cancer Incidents by each state
 
 ```{r}
 cancerincedents %>%
@@ -67,5 +77,4 @@ cancerincedents %>%
   geom_point()
 ```
 
-There seems to be some outliers in the data that would need to be investigated further with some more variables including population and deathrate.
-
+From looking at the graph, there seem to be some outliers in the data that would need to be investigated further with some more variables including population and death rate. But the remaining data set seems to have a somewhat correlation between states and cancer rates. However, we can not say anything for sure right now.  
