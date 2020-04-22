@@ -184,14 +184,15 @@ Cancer %>%
 
 ```
 
-We can see above that as the cancer rate increases so does the death rate. There is a noticeable linear relationship between the two.
+We can see above that as the cancer rate increases so does the death rate. There is a noticeable linear relationship between the two variables.
 
 ```{r}
 #Now I am going to add population into the graph to see if population effects the cancer and/or death rate.
 
 Cancer %>%
   ggplot(aes(x = cancerrate, y = deathrate)) + 
-  geom_point(aes(size = StatePop))
+  geom_point(aes(size = StatePop)) 
+  
 
 ```
 
@@ -202,9 +203,9 @@ Although there are a few outliers we can see that most states fall into the midd
 
 Cancer %>%
   ggplot(aes(x = cancerrate, y = deathrate)) + 
-  geom_point(aes(size = StatePop, alpha = .2)) +
+  geom_point(aes(size = StatePop, alpha = .6)) +
   geom_text(aes(label = Code)) +
-  xlab("Cancer Rate per 100,000 people") +
+  xlab("Cancer Rate") +
   ylab("Death rates from Cancer")
 
 ```
@@ -222,4 +223,6 @@ plot(ctreefunc, type = "simple")
 ```
 
 We can clearly see above that as the cancer rate raises the deathrate due to cancer is greater, which is understandable. Although looking above to the Death Rates from cancer and cancer rate table we can see there are some outliers such as conneticut which has a cancer rate above 450 but has a low death rate compared to pther states in that cancer rate area with only about 140 deaths.
+
+In conclusion we can assume that cancer rate has nothing to do with the population of a state. For example the cancer rate can be high but the population of the state is relatively small. On the other end of the spectrum we can see a pretty clear connection between cancer rate and death rate. When cancer rate trands upwards in a givewn state so does the death rate. 
 
