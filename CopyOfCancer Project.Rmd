@@ -9,7 +9,6 @@ Does cancer and death rate due to cancer change between US States. I am going to
 
 ```{r}
 #Adding the needed packages
-
 library(DataComputing)
 library(ggplot2)
 library(tidyverse)
@@ -21,14 +20,12 @@ library(dplyr)
 
 ```{r}
 #Importing the needed datasets
-
 cancerincedents <- read_excel("~/Downloads/adamhelsinger-cancer-rates-by-u-s-state/data/uscs_map_incidence_all.xlsm")
 cancerdeaths <- read_excel("~/Downloads/adamhelsinger-cancer-rates-by-u-s-state/data/uscs_map_death_all.xlsm")
 statepop <- read_excel("~/Downloads/State Populations.xlsm")
 stateabbrev <-read_excel("~/Downloads/data (1).xlsm")
-statesGDP <- read_excel("~/Downloads/download (1).xls", col_types =  c("text", "numeric"))
-
-somkingdata <- read_excel("~/Downloads/somkingdata.xlsx")
+statesGDP <- read_excel("/Users/Carson/184/FinalProject/stateGDP.xls")
+somkingdata <- read_excel("/Users/Carson/184/FinalProject/somkingdata.xlsx")
 ```
 ```{r}
 #Inspecting the data that was imported
@@ -135,10 +132,14 @@ head(statesGDPnew)
 
 
 ```{r}
+#remove the space and repalce with "."
 names(somkingdata)<-str_replace_all(names(somkingdata), c(" " = "." , "," = "" ))
 ```
 
 ```{r}
+#rename the colcounm name and drop unneeded colcunms 
+head(somkingdata)
+
 somkingdata1 <-
 somkingdata %>%
   rename(state = "Location.Desc") %>%
@@ -146,13 +147,13 @@ somkingdata %>%
   
 somkingdata = select(somkingdata1, state:sample_somking_percentage)
 
-head(somkingdata)
+
 
 ```
 
 ```{r}
 #visuizling the somking rate to see which one is the highest somking rate 
-
+head(somkingdata)
 ggplot(data = somkingdata, mapping = aes(x = reorder(state, sample_somking_percentage), sample_somking_percentage)) + 
   geom_bar(stat = "identity") + coord_flip()
 ```
@@ -255,6 +256,8 @@ Cancer
 
 ```
 
+
+
 ```{r}
 #I am now going to create a dataframe that will let me make me see the states with each death percent
 
@@ -287,13 +290,29 @@ Looking above we can easily see the death percents for each state. The table has
 Cancer %>%
   ggplot(aes(x = cancerrate, y = deathrate)) + 
   geom_point()
-  
-
-  
 
 ```
+We can see above that as the cancer rate increases so does the death rate. There is a noticeable linear relationship between the two. 
 
-We can see above that as the cancer rate increases so does the death rate. There is a noticeable linear relationship between the two.
+```{r}
+#looking for linear relationship in cancerrate & sample_somking_percentage
+Cancer %>%
+  ggplot(aes(x = cancerrate, y = sample_somking_percentage)) + 
+  geom_point() + 
+  geom_smooth(method = lm) 
+```
+we can see that there is a positive linear relationship between cancerrate & sample_somking_percentage. 
+```{r}
+#looking for linear relationship in cancerrate & gdp
+
+Cancer %>%
+  ggplot(aes(x = cancerrate, y = gdp)) + 
+  geom_point()+ 
+  geom_smooth(method = lm) 
+```
+
+we can see that there is a negative linear relationship between cancerrate & sample_somking_percentage. 
+
 
 ```{r}
 #Now I am going to add population into the graph to see if population effects the cancer and/or death rate.
@@ -333,6 +352,7 @@ head(Cancer)
 mod1 <- party::ctree(deathrate ~ gdp + sample_somking_percentage, data = Cancer)
 plot(mod1, type = "simple")
 ```
+From the regrission tree diagram, we can see that somking % is an important factor assocated with deathrate. For people who 
 ```{r}
 Cancer %>%
   mutate(probability = as.numeric(predict(mod1)), 
@@ -345,4 +365,12 @@ Cancer %>%
 regressMod <- lm(deathrate ~ cancerrate + StatePop + gdp + sample_somking_percentage, data = Cancer ) 
 regressMod$coefficients
 ```
+
+each increase in cancer rate, is related to an increase of  deathrate by 0.185. 
+each increase in sample_somking_percentage, is related to an increase of  deathrate by 3.14. 
+since statepop and gdp slope value respected to death rate is too small and it has no meaning. 
+
+
+In conclison,  Populatiion and gdp seems no related to cancer rate. But the somking and death rate are related to cancer rate,the higher cancer rate, the higher death & somking rate. We see the KY seems to be one of highest somking rate and cancer rate, we can look into KY future to do more analysis. 
+
 
