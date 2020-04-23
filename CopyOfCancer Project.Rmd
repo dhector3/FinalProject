@@ -1,14 +1,15 @@
 ---
 title: "Cancer Study"
-author: "Dillon Hector, Chenxi Su,Zeng"
-date: "3/25/2020"
+author: "Dillon Hector, Chenxi Su, Zeng"
+date: "4/23/2020"
 output: html_notebook
 ---
 
-Does cancer and death rate due to cancer change between US States. I am going to research this simple question to learn if there is a difference and if so, does population account for the change? This topic is important personally because many of my family memebers have died due to cancer and I am interested in learning more about the topic.
+Does cancer and death rate due to cancer change between US States and if so does population, smoking, or gdp have any influence? We are going to research this simple question to learn if there is a difference. This topic is important because many of our family members have died due to cancer and we are interested in learning more about this topic.
 
 ```{r}
-#Adding the needed packages
+#Adding the needed packages for this project
+
 library(DataComputing)
 library(ggplot2)
 library(tidyverse)
@@ -20,12 +21,12 @@ library(dplyr)
 
 ```{r}
 #Importing the needed datasets
-cancerincedents <- read_excel("~/Downloads/adamhelsinger-cancer-rates-by-u-s-state/data/uscs_map_incidence_all.xlsm")
-cancerdeaths <- read_excel("~/Downloads/adamhelsinger-cancer-rates-by-u-s-state/data/uscs_map_death_all.xlsm")
-statepop <- read_excel("~/Downloads/State Populations.xlsm")
-stateabbrev <-read_excel("~/Downloads/data (1).xlsm")
-statesGDP <- read_excel("/Users/Carson/184/FinalProject/stateGDP.xls")
-somkingdata <- read_excel("/Users/Carson/184/FinalProject/somkingdata.xlsx")
+cancerincedents <- cancerinc
+cancerdeaths <- cancerdeaths
+statepop <- State.Populations
+stateabbrev <- data
+statesGDP <- stateGDP
+smokingdata <- smoking
 ```
 ```{r}
 #Inspecting the data that was imported
@@ -35,18 +36,27 @@ glimpse(cancerdeaths)
 glimpse(statepop)
 glimpse(stateabbrev)
 glimpse(statesGDP)
-glimpse(somkingdata)
+glimpse(smokingdata)
 
 head(cancerincedents)
 head(cancerdeaths)
 head(statepop)
 head(stateabbrev)
 head(statesGDP)
-head(somkingdata)
+head(smokingdata)
+```
+```{r}
+#Inspecting the data we can see that the statepop data table did not import correctly we will fix this now
+
+statepop <- 
+  statepop[-1, ]
+
+statepop
+
 ```
 
 ```{r}
-#The first task that needs to be done is to wranglet the datasets togetheer into one dataset
+#The first task that needs to be done is to wranglet the datasets together into one dataset
 
 #The first wrangle will be to join stateabbrev with statepop
 
@@ -65,22 +75,6 @@ statepopcorrected2
 
 
 ```{r}
-#I am not fond with the variable name "X2018.Population" so I will change that now
-
-FinalStatepop <-
-       statepopcorrected2 %>%
-       rename(StatePop = "2018 Population")%>%
-       rename(state = "State")
-
-FinalStatepop
-  
-```
-
-
-
-
-
-```{r}
 #Now I am going to rename the variables in cancer incidents and deaths to be more informative
 
 CancerIncedents2 <-
@@ -95,7 +89,8 @@ CancerIncedents2
 #visuizling the cancer rate to see which one is the highest cancer rate 
 
 ggplot(data = CancerIncedents2, mapping = aes(x = reorder(state, cancerrate), cancerrate)) + 
-  geom_bar(stat = "identity") + coord_flip()
+  geom_bar(stat = "identity") + 
+  coord_flip() 
 ```
 
 
@@ -133,28 +128,29 @@ head(statesGDPnew)
 
 ```{r}
 #remove the space and repalce with "."
-names(somkingdata)<-str_replace_all(names(somkingdata), c(" " = "." , "," = "" ))
+names(smokingdata)<-str_replace_all(names(smokingdata), c(" " = "." , "," = "" ))
 ```
 
 ```{r}
-#rename the colcounm name and drop unneeded colcunms 
-head(somkingdata)
+smokingdata
+#rename the column name and drop unneeded columns 
+head(smokingdata)
 
-somkingdata1 <-
-somkingdata %>%
+smokingdata1 <-
+smokingdata %>%
   rename(state = "Location.Desc") %>%
-  rename(sample_somking_percentage = "Data.Value")
+  rename(sample_smoking_percentage = "Data.Value")
   
-somkingdata = select(somkingdata1, state:sample_somking_percentage)
-
+smokingdata = select(smokingdata, state:sample_smoking_percentage)
+smokingdata
 
 
 ```
 
 ```{r}
 #visuizling the somking rate to see which one is the highest somking rate 
-head(somkingdata)
-ggplot(data = somkingdata, mapping = aes(x = reorder(state, sample_somking_percentage), sample_somking_percentage)) + 
+
+ggplot(data = smokingdata, mapping = aes(x = reorder(state, sample_smoking_percentage), sample_smoking_percentage)) + 
   geom_bar(stat = "identity") + coord_flip()
 ```
 
@@ -168,13 +164,6 @@ plot_usmap(data = CancerDeaths2, values = "deathrate", color = "red") +
    labs(title = "deathrate") +
   theme(legend.position = "right")
 
-
-
-plot_usmap(data = FinalStatepop, values = "StatePop", color = "red") + 
-  scale_fill_continuous(name = "StatePop", label = scales::comma) +
-  labs(title = "Statepop") +
-  theme(legend.position = "right") 
-
 plot_usmap(data = CancerIncedents2, values = "cancerrate", color = "red") + 
   scale_fill_continuous(name = "cancerrate", label = scales::comma) + 
   labs(title = "cancerrate") +
@@ -185,14 +174,14 @@ plot_usmap(data = statesGDPnew, values = "gdp", color = "red") +
   labs(title = "StatesGDP") +
   theme(legend.position = "right")
 
-plot_usmap(data = somkingdata, values = "sample_somking_percentage", color = "red") + 
-  scale_fill_continuous(name = "sample_somking_percentage", label = scales::comma) +
-  labs(title = "Statessomking") +
+plot_usmap(data = smokingdata, values = "sample_smoking_percentage", color = "red") + 
+  scale_fill_continuous(name = "sample_smoking_percentage", label = scales::comma) +
+  labs(title = "States Smoking %") +
   theme(legend.position = "right")
 
 ```
 
-From the rough observation of these graph, the cancer rate and death rate seems to have correlation and population & GDP seems to have correlation. But we don't see cancer rate haas anything to do with population or GDP, somking seems to be an factor casues high cancer rate, we are trying to have more detailed analysis below.... 
+From the rough observation of these graphs, the cancer and death rates seem to have correlation. Also, population & GDP seems to have correlation. But we don't see that cancer rate has anything to do with population or GDP, somking seems to be an factor casues high cancer rate, we are trying to have more detailed analysis below.... 
 
 
 
@@ -214,10 +203,10 @@ CancerData
 
 Cancer <-
   FinalStatepop %>%
-  select(state, StatePop, Code) %>%
+  select(state, Population, Code) %>%
   left_join(CancerData, by = c("Code" = "state")) %>%
   left_join(statesGDPnew) %>%
-  left_join(somkingdata)
+  left_join(smokingdata)
   
 
 
@@ -297,7 +286,7 @@ We can see above that as the cancer rate increases so does the death rate. There
 ```{r}
 #looking for linear relationship in cancerrate & sample_somking_percentage
 Cancer %>%
-  ggplot(aes(x = cancerrate, y = sample_somking_percentage)) + 
+  ggplot(aes(x = cancerrate, y = sample_smoking_percentage)) + 
   geom_point() + 
   geom_smooth(method = lm) 
 ```
@@ -311,7 +300,7 @@ Cancer %>%
   geom_smooth(method = lm) 
 ```
 
-we can see that there is a negative linear relationship between cancerrate & sample_somking_percentage. 
+we can see that there is a negative linear relationship between cancerrate & gdp. It is very slight though. 
 
 
 ```{r}
@@ -319,7 +308,7 @@ we can see that there is a negative linear relationship between cancerrate & sam
 
 Cancer %>%
   ggplot(aes(x = cancerrate, y = deathrate)) + 
-  geom_point(aes(size = StatePop))
+  geom_point(aes(size = Population))
 
 ```
 
@@ -330,9 +319,9 @@ Although there are a few outliers we can see that most states fall into the midd
 
 Cancer %>%
   ggplot(aes(x = cancerrate, y = deathrate)) + 
-  geom_point(aes(size = StatePop, alpha = .2)) +
+  geom_point(aes(size = Population, alpha = .2)) +
   geom_text(aes(label = Code)) +
-  xlab("Cancer Rate per 100,000 people") +
+  xlab("Cancer Rate") +
   ylab("Death rates from Cancer")
 
 ```
@@ -343,16 +332,16 @@ We can see on the graph above that the outlier that was talked about in the prev
 
 
 ```{r}
-ctreefunc <- party::ctree(deathrate ~ cancerrate + StatePop, data = Cancer)
+ctreefunc <- party::ctree(deathrate ~ cancerrate + Population, data = Cancer)
 plot(ctreefunc, type = "simple")
 ```
 
 ```{r}
 head(Cancer)
-mod1 <- party::ctree(deathrate ~ gdp + sample_somking_percentage, data = Cancer)
+mod1 <- party::ctree(deathrate ~ gdp + sample_smoking_percentage, data = Cancer)
 plot(mod1, type = "simple")
 ```
-From the regrission tree diagram, we can see that somking % is an important factor assocated with deathrate. For people who 
+From the regrission tree diagram, we can see that smoking % is an important factor assocated with deathrate. For people who smoke
 ```{r}
 Cancer %>%
   mutate(probability = as.numeric(predict(mod1)), 
@@ -362,7 +351,7 @@ Cancer %>%
 
 
 ```{r}
-regressMod <- lm(deathrate ~ cancerrate + StatePop + gdp + sample_somking_percentage, data = Cancer ) 
+regressMod <- lm(deathrate ~ cancerrate + Population + gdp + sample_smoking_percentage, data = Cancer ) 
 regressMod$coefficients
 ```
 
@@ -370,7 +359,9 @@ each increase in cancer rate, is related to an increase of  deathrate by 0.185.
 each increase in sample_somking_percentage, is related to an increase of  deathrate by 3.14. 
 since statepop and gdp slope value respected to death rate is too small and it has no meaning. 
 
+We can clearly see above that as the cancer rate raises the deathrate due to cancer is greater, which is understandable. Although looking above to the Death Rates from cancer and cancer rate table we can see there are some outliers such as conneticut which has a cancer rate above 450 but has a low death rate compared to pther states in that cancer rate area with only about 140 deaths.
 
-In conclison,  Populatiion and gdp seems no related to cancer rate. But the somking and death rate are related to cancer rate,the higher cancer rate, the higher death & somking rate. We see the KY seems to be one of highest somking rate and cancer rate, we can look into KY future to do more analysis. 
+In conclusion we can assume that cancer rate has nothing to do with the population of a state. For example the cancer rate can be high but the population of the state is relatively small. On the other end of the spectrum we can see a pretty clear connection between cancer rate and death rate. When cancer rate trands upwards in a givewn state so does the death rate. Also, there is a clear connection between the percent of smokers in a given state and the cancer rate being that both seem to rise. 
+
 
 
