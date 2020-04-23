@@ -346,4 +346,3 @@ regressMod <- lm(deathrate ~ cancerrate + StatePop + gdp + sample_somking_percen
 regressMod$coefficients
 ```
 
-
